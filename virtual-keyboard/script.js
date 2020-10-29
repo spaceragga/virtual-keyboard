@@ -74,7 +74,7 @@ const Keyboard = {
 
       window.addEventListener("keydown", (e) => {
         console.log(e);
-        const button_id = e.key;
+        const button_id = e.key.length > 1 ? e.key : e.key.toLowerCase();
         document.getElementById(button_id).classList.add('keyboard__key_on')
         // element.e.classList.add(".keyboard__key_on")
         // setTimeout((function() {
@@ -98,7 +98,7 @@ const Keyboard = {
       });
       window.addEventListener("keyup", (e) => {
         console.log(e);
-        const button_id = e.key;
+        const button_id = e.key.length > 1 ? e.key : e.key.toLowerCase();
         document.getElementById(button_id).classList.remove('keyboard__key_on');
       });
     });
@@ -181,8 +181,12 @@ const Keyboard = {
           keyElement.innerHTML = createIconHTML("backspace");
 
           keyElement.addEventListener("click", () => {
-            // this.properties.value = (before + (this.properties.capsLock ? key.toLowerCase() : key.toUpperCase()) + after);
-            this.properties.value = this.properties.value.slice(0, this.properties.end - 1) + this.properties.value.slice(this.properties.end);
+            const start = input.selectionStart;
+            const inputValue = input.value;
+            if (start === 0) return;
+            input.value = inputValue.slice(0, start - 1) + inputValue.slice(start);
+            this.properties.value = input.value;
+            input.focus();
             if (this.properties.start > 0) {
               this.properties.start--;
               this.properties.end--;
@@ -292,10 +296,15 @@ const Keyboard = {
           keyElement.innerHTML = createIconHTML("space_bar");
 
           keyElement.addEventListener("click", () => {
-            const before = this.properties.value.substring(0, this.properties.start)
-            const after = this.properties.value.substring(this.properties.end, this.properties.value.length)
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
 
-            this.properties.value = (before + " " + after);
+            const inputValue = input.value;
+            const before = inputValue.substring(0, start)
+            const after = inputValue.substring(end, inputValue.length)
+            input.value = before + " " + after;
+
+            this.properties.value = input.value;
             this.properties.start++;
             this.properties.end++;
             // this.properties.value += " ";
