@@ -186,12 +186,13 @@ const Keyboard = {
             if (start === 0) return;
             input.value = inputValue.slice(0, start - 1) + inputValue.slice(start);
             this.properties.value = input.value;
-            input.focus();
-            if (this.properties.start > 0) {
-              this.properties.start--;
-              this.properties.end--;
+
+            if (start > 0) {
+              this.properties.start = start - 1;
+              this.properties.end = start - 1;
               input.setSelectionRange(this.properties.start, this.properties.end);
             }
+
             // this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1);
             if (this.properties.sound) {
               const audio = new Audio();
@@ -416,24 +417,25 @@ const Keyboard = {
           }
 
           keyElement.addEventListener("click", () => {
-            //             const start = input.selectionStart
-            // const end = input.selectionEnd
-            // const text = this.properties.value
-            const before = this.properties.value.substring(0, this.properties.start)
-            const after = this.properties.value.substring(this.properties.end, this.properties.value.length)
-            // this.properties.value = (before + after)
-            // input.selectionStart = input.selectionEnd = start + this.properties.value
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const inputValue = input.value
+            const before = inputValue.substring(0, start)
+            const after = inputValue.substring(end, inputValue.length);
+
+
             if (!this.properties.capsLock && this.properties.shift) {
-              this.properties.value = (before + (this.properties.capsLock ? key.toLowerCase() : key.toUpperCase()) + after);
+              input.value = (before + (this.properties.capsLock ? key.toLowerCase() : key.toUpperCase()) + after);
               // this.properties.value += this.properties.capsLock ? key.toLowerCase() : key.toUpperCase();
             } else if (this.properties.capsLock && this.properties.shift) {
-              this.properties.value = (before + (this.properties.capsLock ? key.toLowerCase() : key.toUpperCase()) + after);
+              input.value = (before + (this.properties.capsLock ? key.toLowerCase() : key.toUpperCase()) + after);
 
             } else {
-              this.properties.value = (before + (this.properties.capsLock ? key.toUpperCase() : key.toLowerCase()) + after);
+              input.value = (before + (this.properties.capsLock ? key.toUpperCase() : key.toLowerCase()) + after);
 
 
             }
+            this.properties.value = input.value;
             this.properties.start++;
             this.properties.end++;
             // this.properties.end.focus();
