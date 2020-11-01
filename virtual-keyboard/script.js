@@ -18,7 +18,8 @@ const Keyboard = {
     shift: false,
     lang: 'en',
     start: 0,
-    end: 0
+    end: 0,
+    sound: false
 
 
   },
@@ -125,7 +126,7 @@ const Keyboard = {
       "Q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
       "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", "Enter",
       "Shift", "z", "x", "c", "v", "b", "n", "m", "<", ">", "?", "done", 
-      " ", "en", "ArrowLeft", "ArrowRight"
+      "sound", " ", "en", "ArrowLeft", "ArrowRight"
     ];
 
     if(i==0&&this.properties.lang == 'en')    keyLayout = [
@@ -133,7 +134,7 @@ const Keyboard = {
       "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
       "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", "Enter",
       "Shift", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "done", 
-      " ", "en", "ArrowLeft", "ArrowRight"
+      "sound", " ", "en", "ArrowLeft", "ArrowRight"
     ];
     //ru
     if(i==1&&this.properties.lang == 'ru')    keyLayout = [
@@ -141,7 +142,7 @@ const Keyboard = {
       "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з",
       "CapsLock", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "Enter",
       "Shift", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ",", "done", 
-      " ", "ru", "ArrowLeft", "ArrowRight"
+      "sound", " ", "ru", "ArrowLeft", "ArrowRight"
     ];
 
     if(i==0&&this.properties.lang == 'ru')    keyLayout = [
@@ -149,7 +150,7 @@ const Keyboard = {
       "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з",
       "CapsLock", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "Enter",
       "Shift", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ".", "done", 
-      " ", "ru", "ArrowLeft", "ArrowRight"
+      "sound", " ", "ru", "ArrowLeft", "ArrowRight"
     ];
 
     // Creates HTML for an icon
@@ -181,6 +182,11 @@ const Keyboard = {
               input.setSelectionRange(this.properties.start, this.properties.end);
             }
             // this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1);
+            if(this.properties.sound) {
+            const audio = new Audio();
+            audio.src = './sound/joystick-trigger-button.mp3'; 
+            audio.autoplay = true;
+            }
             this._triggerEvent("oninput");
             // console.log(this.properties.value)
           });
@@ -205,7 +211,32 @@ const Keyboard = {
             keyElement.classList.add("keyboard__key--active", this.properties.capsLock);
             this.properties.capsLock = true;
           }  
+          if(this.properties.sound) {
+            const audio = new Audio();
+            audio.src = './sound/typewriter-press-single.mp3'; 
+            audio.autoplay = true;
+          }
             this._toggleCapsLock();
+          });
+
+          break;
+
+        case "sound":
+          if(this.properties.sound) {
+            keyElement.classList.add("keyboard__key--active", this.properties.sound);
+          } 
+          keyElement.classList.add("keyboard__key--wide", "keyboard__key--activatable");
+          keyElement.innerHTML = createIconHTML("volume_up");
+
+          keyElement.addEventListener("click", () => {
+          if(this.properties.sound) {
+            this.properties.sound = false;
+            keyElement.classList.remove("keyboard__key--active", this.properties.sound);
+          } else {
+            keyElement.classList.add("keyboard__key--active", this.properties.sound);
+            this.properties.sound = true;
+          }  
+            this._soundOther();
           });
 
           break;
@@ -218,6 +249,11 @@ const Keyboard = {
             this.properties.value += "\n";
             this.properties.start++;
             this.properties.end++;
+            if(this.properties.sound) {
+              const audio = new Audio();
+              audio.src = './sound/jg-sfx.mp3'; 
+              audio.autoplay = true;
+            }
             this._triggerEvent("oninput");
           });
 
@@ -235,6 +271,7 @@ const Keyboard = {
                 this.properties.start++;
                 this.properties.end++;
             // this.properties.value += " ";
+            this._soundMain();
             this._triggerEvent("oninput");
           });
 
@@ -245,6 +282,7 @@ const Keyboard = {
           keyElement.innerHTML = createIconHTML("check_circle");
 
           keyElement.addEventListener("click", () => {
+            this._soundOther();
             this.close();
             // this._triggerEvent("onclose");
           });
@@ -259,12 +297,13 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             if(this.properties.lang === 'ru') this.properties.lang = "en";
             else  this.properties.lang = "ru";
-
+            
             this.elements.main.remove();
-
+            
             if(this.properties.shift) Keyboard.init(1); 
             else Keyboard.init(0); 
-
+            
+            this._soundOther();
             this.open();
             document.querySelector(".use-keyboard-input").focus();
           });
@@ -274,7 +313,8 @@ const Keyboard = {
 
           case "Shift":
             keyElement.classList.add("keyboard__key--wide");
-            keyElement.innerHTML = "Shift";
+            keyElement.innerHTML = "⇧";
+            // keyElement.innerHTML = "Shift";
             keyElement.classList.toggle('keyboard__key--dark', this.properties.shift);
 
             keyElement.addEventListener("click", () => {
@@ -282,6 +322,11 @@ const Keyboard = {
                   this.properties.shift = false;
               } else {
                 this.properties.shift = true;
+              }
+              if(this.properties.sound) {
+                const audio = new Audio();
+                audio.src = './sound/fax-machine.mp3'; 
+                audio.autoplay = true;
               }
               this._toggleShift();
             });
@@ -299,6 +344,7 @@ const Keyboard = {
                 this.properties.end--;
                 input.setSelectionRange(this.properties.start, this.properties.end);
               }
+              this._soundOther();
               input.focus();
               
             });
@@ -316,6 +362,7 @@ const Keyboard = {
                 this.properties.end++;
                 input.setSelectionRange(this.properties.start, this.properties.end);
               }
+              this._soundOther();
               input.focus();
             });
             break;
@@ -368,6 +415,7 @@ const Keyboard = {
             // let i = +keyElement.textContent
             // console.dir(keyElement)
             console.log(this.properties.start, this.properties.end)
+            this._soundMain();
             this._triggerEvent("oninput");
           });
           
@@ -392,6 +440,20 @@ const Keyboard = {
     input.selectionEnd = this.properties.end;
 
     input.focus();
+  },
+
+  _soundMain() {
+    const audio = new Audio();
+    if(this.properties.lang === 'ru') audio.src = './sound/lo-fi-snare-dry_B_minor.wav'; 
+    else audio.src = './sound/short-click-perc.wav'; 
+    if(this.properties.sound) audio.autoplay = true;
+  },
+
+  _soundOther() {
+    const audio = new Audio();
+    if(this.properties.lang === 'ru') audio.src = './sound/dry-mixed-trap-snare.wav'; 
+    else audio.src = './sound/ping-bing_E_major.wav'; 
+    if(this.properties.sound) audio.autoplay = true;
   },
 
   _toggleCapsLock() {
