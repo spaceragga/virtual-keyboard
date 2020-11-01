@@ -228,7 +228,13 @@ const Keyboard = {
           keyElement.innerHTML = createIconHTML("space_bar");
 
           keyElement.addEventListener("click", () => {
-            this.properties.value += " ";
+            const before = this.properties.value.substring(0, this.properties.start)
+            const after  = this.properties.value.substring(this.properties.end, this.properties.value.length)
+
+                this.properties.value = (before + " " + after);
+                this.properties.start++;
+                this.properties.end++;
+            // this.properties.value += " ";
             this._triggerEvent("oninput");
           });
 
