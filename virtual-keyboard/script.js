@@ -20,6 +20,7 @@ const Keyboard = {
     start: 0,
     end: 0
 
+
   },
 
   init(e) {
@@ -63,10 +64,11 @@ const Keyboard = {
 
       });
 
-      element.addEventListener("keypress", (e) => {
+      window.addEventListener("keydown", (e) => {
         console.log(e);
-
-    element.e.classList.add(".keyboard__key_on")
+        const button_id = e.key;
+        document.getElementById(button_id).classList.add('keyboard__key_on')
+    // element.e.classList.add(".keyboard__key_on")
     // setTimeout((function() {
     //     element.key.classList.remove(".keyboard__key_on:active")
     // }
@@ -85,6 +87,11 @@ const Keyboard = {
             // console.log(this.properties.value)
             // this.properties.start++;
             // this.properties.end++;
+          });
+          window.addEventListener("keyup", (e) => {
+            console.log(e);
+            const button_id = e.key;
+            document.getElementById(button_id).classList.remove('keyboard__key_on');
           });
     });
 
@@ -114,35 +121,35 @@ const Keyboard = {
     const fragment = document.createDocumentFragment();
     //en
     if(i==1&&this.properties.lang == 'en') keyLayout = [
-      "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "backspace",
+      "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "Backspace",
       "Q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
-      "caps", "a", "s", "d", "f", "g", "h", "j", "k", "l", "enter",
-      "shift", "z", "x", "c", "v", "b", "n", "m", "<", ">", "?", "done", 
-      "space", "en", "left", "right"
+      "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", "Enter",
+      "Shift", "z", "x", "c", "v", "b", "n", "m", "<", ">", "?", "done", 
+      " ", "en", "ArrowLeft", "ArrowRight"
     ];
 
     if(i==0&&this.properties.lang == 'en')    keyLayout = [
-      "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "backspace",
+      "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Backspace",
       "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
-      "caps", "a", "s", "d", "f", "g", "h", "j", "k", "l", "enter",
-      "shift", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "done", 
-      "space", "en", "left", "right"
+      "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", "Enter",
+      "Shift", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "done", 
+      " ", "en", "ArrowLeft", "ArrowRight"
     ];
     //ru
     if(i==1&&this.properties.lang == 'ru')    keyLayout = [
-      "!", '"', "№", ";", "%", ":", "?", "*", "(", ")", "backspace",
+      "!", '"', "№", ";", "%", ":", "?", "*", "(", ")", "Backspace",
       "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з",
-      "caps", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "enter",
-      "shift", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ",", "done", 
-      "space", "ru", "left", "right"
+      "CapsLock", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "Enter",
+      "Shift", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ",", "done", 
+      " ", "ru", "ArrowLeft", "ArrowRight"
     ];
 
     if(i==0&&this.properties.lang == 'ru')    keyLayout = [
-      "1", '2', "3", "4", "5", "6", "7", "8", "9", "0", "backspace",
+      "1", '2', "3", "4", "5", "6", "7", "8", "9", "0", "Backspace",
       "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з",
-      "caps", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "enter",
-      "shift", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ".", "done", 
-      "space", "ru", "left", "right"
+      "CapsLock", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "Enter",
+      "Shift", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ".", "done", 
+      " ", "ru", "ArrowLeft", "ArrowRight"
     ];
 
     // Creates HTML for an icon
@@ -153,14 +160,15 @@ const Keyboard = {
     keyLayout.forEach(key => {
       
       const keyElement = document.createElement("button");
-      const insertLineBreak = ["backspace", "p", "enter", "done", "з"].indexOf(key) !== -1;
+      const insertLineBreak = ["Backspace", "p", "Enter", "done", "з"].indexOf(key) !== -1;
 
       // Add attributes/classes
       keyElement.setAttribute("type", "button");
       keyElement.classList.add("keyboard__key");
+      keyElement.id = key;
 
       switch (key) {
-        case "backspace":
+        case "Backspace":
           keyElement.classList.add("keyboard__key--wide");
           keyElement.innerHTML = createIconHTML("backspace");
 
@@ -179,7 +187,7 @@ const Keyboard = {
 
           break;
 
-        case "caps":
+        case "CapsLock":
           // keyElement.classList.toggle("keyboard__key--active", this.properties.capsLock);
           if(this.properties.capsLock) {
             keyElement.classList.add("keyboard__key--active", this.properties.capsLock);
@@ -202,7 +210,7 @@ const Keyboard = {
 
           break;
 
-        case "enter":
+        case "Enter":
           keyElement.classList.add("keyboard__key--wide");
           keyElement.innerHTML = createIconHTML("keyboard_return");
 
@@ -215,7 +223,7 @@ const Keyboard = {
 
           break;
 
-        case "space":
+        case " ":
           keyElement.classList.add("keyboard__key--extra-wide");
           keyElement.innerHTML = createIconHTML("space_bar");
 
@@ -232,7 +240,7 @@ const Keyboard = {
 
           keyElement.addEventListener("click", () => {
             this.close();
-            this._triggerEvent("onclose");
+            // this._triggerEvent("onclose");
           });
 
           break;
@@ -258,7 +266,7 @@ const Keyboard = {
 
           break;
 
-          case "shift":
+          case "Shift":
             keyElement.classList.add("keyboard__key--wide");
             keyElement.innerHTML = "Shift";
             keyElement.classList.toggle('keyboard__key--dark', this.properties.shift);
@@ -274,9 +282,9 @@ const Keyboard = {
   
             break;
 
-            case "left": 
-            keyElement.classList.add(key);
-            keyElement.innerHTML = createIconHTML("keyboard_arrow_"+key);
+            case "ArrowLeft": 
+            // keyElement.classList.add(key);
+            keyElement.innerHTML = createIconHTML("keyboard_arrow_left");
             keyElement.addEventListener('click', () => {
               //стрелка влево работа шифта по выделению
               // if (!this.properties.shift) {
@@ -290,9 +298,9 @@ const Keyboard = {
             });
             break;
   
-          case "right":
+          case "ArrowRight":
             keyElement.classList.add(key);
-            keyElement.innerHTML = createIconHTML("keyboard_arrow_"+key);
+            keyElement.innerHTML = createIconHTML("keyboard_arrow_right");
             keyElement.addEventListener('click', () => {
               //стрелка вправо
               // if (!this.properties.shift) {
