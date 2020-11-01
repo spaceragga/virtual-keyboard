@@ -1,5 +1,11 @@
 let input = document.querySelector(".use-keyboard-input");
 
+window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+const recognition = new SpeechRecognition();
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+
 const Keyboard = {
   elements: {
     main: null,
@@ -19,7 +25,8 @@ const Keyboard = {
     lang: 'en',
     start: 0,
     end: 0,
-    sound: false
+    sound: false,
+    mic: false
 
 
   },
@@ -126,7 +133,7 @@ const Keyboard = {
       "Q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
       "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", "Enter",
       "Shift", "z", "x", "c", "v", "b", "n", "m", "<", ">", "?", "done", 
-      "sound", " ", "en", "ArrowLeft", "ArrowRight"
+      "mic", "sound", " ", "en", "ArrowLeft", "ArrowRight"
     ];
 
     if(i==0&&this.properties.lang == 'en')    keyLayout = [
@@ -134,7 +141,7 @@ const Keyboard = {
       "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
       "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", "Enter",
       "Shift", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "done", 
-      "sound", " ", "en", "ArrowLeft", "ArrowRight"
+      "mic", "sound", " ", "en", "ArrowLeft", "ArrowRight"
     ];
     //ru
     if(i==1&&this.properties.lang == 'ru')    keyLayout = [
@@ -142,7 +149,7 @@ const Keyboard = {
       "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з",
       "CapsLock", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "Enter",
       "Shift", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ",", "done", 
-      "sound", " ", "ru", "ArrowLeft", "ArrowRight"
+      "mic", "sound", " ", "ru", "ArrowLeft", "ArrowRight"
     ];
 
     if(i==0&&this.properties.lang == 'ru')    keyLayout = [
@@ -150,7 +157,7 @@ const Keyboard = {
       "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з",
       "CapsLock", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "Enter",
       "Shift", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ".", "done", 
-      "sound", " ", "ru", "ArrowLeft", "ArrowRight"
+      "mic", "sound", " ", "ru", "ArrowLeft", "ArrowRight"
     ];
 
     // Creates HTML for an icon
@@ -237,6 +244,27 @@ const Keyboard = {
             this.properties.sound = true;
           }  
             this._soundOther();
+          });
+
+          break;
+
+        case "mic":
+          if(this.properties.mic) {
+            keyElement.classList.add("keyboard__key--active", this.properties.mic);
+          } 
+          keyElement.classList.add("keyboard__key--wide", "keyboard__key--activatable");
+          keyElement.innerHTML = createIconHTML("mic");
+
+          keyElement.addEventListener("click", () => {
+          if(this.properties.mic) {
+            this.properties.mic = false;
+            keyElement.classList.remove("keyboard__key--active", this.properties.mic);
+          } else {
+            keyElement.classList.add("keyboard__key--active", this.properties.mic);
+            this.properties.mic = true;
+          }  
+            this._soundOther();
+            this.speechToggle();
           });
 
           break;
@@ -432,6 +460,33 @@ const Keyboard = {
     return fragment;
   },
 
+  speechToggle() {
+    if(this.properties.mic) {
+      const locale = (this.properties.lang === 'en') ? 'en-US' : 'ru-RU';
+      recognition.addEventListener('result', e => {
+        console.log(e.results);
+        const transcript = Array.from(e.results)
+        .map(result => result[0])
+
+        console.log(transcript);
+      });
+      recognition.start();
+      // this.rec = new SpeechRecognizer(locale, this.printSpeechResult.bind(this));
+      // this.rec.start();
+    }
+    // else {
+    //   this.rec.stop();
+    //   this.rec = undefined;
+    // }
+  },
+
+  // printSpeechResult(res) {
+  //   this.addChar(res[res.length - 1][0].transcript);
+  // },
+
+
+
+
   _triggerEvent(handlerName) {
     if (typeof this.eventHandlers[handlerName] == "function") {
       this.eventHandlers[handlerName](this.properties.value);
@@ -519,25 +574,17 @@ const Keyboard = {
   }
 };
 
+// class SpeechRecognizer {
+//   constructor(lang, callback) {
+//     window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+//     this.recognition = new SpeechRecognition();
+//     this.recognition.lang = lang;
+//     this.recognition.continuous = true;
+    
+//     this.recognition.addEventListener('result', (r) => { callback(r.results) })
+//     this.recognition.addEventListener('end', this.stop.bind(this));    
+//   };
+
 window.addEventListener("DOMContentLoaded", function () {
   Keyboard.init(0);
 });
-
-
-// document.addEventListener('keydown', this.handleEvent);
-// document.addEventListener('keyup', this.handleEvent);
-
-// handleEvent = (e) => {
-//   if (e.stopPropagation) e.stopPropagation();
-//   const { code, type } = e;
-//   const keyObj = this.keyButtons.find((key) => key.code === code);
-//   if (!keyObj) return;
-//   this.output.focus();
-// }
-
-
-    // let text = document.querySelector(".use-keyboard-input");
-
-    // text.addEventListener('click', () => {
-    //   console.log(text.value);
-    // });
