@@ -22,7 +22,7 @@ const Keyboard = {
     value: "",
     capsLock: false,
     shift: false,
-    lang: 'en',
+    lang: 'ru',
     start: 0,
     end: 0,
     sound: false,
@@ -470,29 +470,28 @@ const Keyboard = {
   },
 
   speechToggle() {
-    if (this.properties.mic) {
-      const locale = (this.properties.lang === 'en') ? 'en-US' : 'ru-RU';
+    if(this.properties.mic) {
+      this.properties.lang === 'en' ? recognition.lang = 'en-US' : recognition.lang = 'ru-RU';
+      console.log(recognition.lang)
       recognition.addEventListener('result', e => {
-        console.log(e.results);
+        const before = this.properties.value.substring(0, this.properties.start)
+        const after  = this.properties.value.substring(this.properties.end, this.properties.value.length)
         const transcript = Array.from(e.results)
-          .map(result => result[0])
+        .map(result => result[0])
+        .map(result => result.transcript)
+        .join('');
 
+        if (e.results[0].isFinal) {
+        this.properties.value = (before + transcript + after);
+        }
+        this.properties.start += transcript.length;
+        this.properties.end += transcript.length;
         console.log(transcript);
+        this._triggerEvent("oninput");
       });
       recognition.start();
-      // this.rec = new SpeechRecognizer(locale, this.printSpeechResult.bind(this));
-      // this.rec.start();
     }
-    // else {
-    //   this.rec.stop();
-    //   this.rec = undefined;
-    // }
   },
-
-  // printSpeechResult(res) {
-  //   this.addChar(res[res.length - 1][0].transcript);
-  // },
-
 
 
 
@@ -582,17 +581,6 @@ const Keyboard = {
     this.elements.main.classList.add("keyboard--hidden");
   }
 };
-
-// class SpeechRecognizer {
-//   constructor(lang, callback) {
-//     window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-//     this.recognition = new SpeechRecognition();
-//     this.recognition.lang = lang;
-//     this.recognition.continuous = true;
-
-//     this.recognition.addEventListener('result', (r) => { callback(r.results) })
-//     this.recognition.addEventListener('end', this.stop.bind(this));    
-//   };
 
 window.addEventListener("DOMContentLoaded", function () {
   Keyboard.init(0);
