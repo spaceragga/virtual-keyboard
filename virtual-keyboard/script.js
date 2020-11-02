@@ -59,8 +59,8 @@ const Keyboard = {
         this.open(element.value, currentValue => {
           element.value = currentValue;
           element.focus();
-          console.log(element.value)
-          console.log(currentValue)
+          // console.log(element.value)
+          // console.log(currentValue)
         });
       });
       element.addEventListener('click', () => {
@@ -73,32 +73,15 @@ const Keyboard = {
       });
 
       window.addEventListener("keydown", (e) => {
-        console.log(e);
-        const button_id = e.key.length > 1 ? e.key : e.key.toLowerCase();
+        // console.log(e);
+        const button_id = e.code;
         document.getElementById(button_id).classList.add('keyboard__key_on')
-        // element.e.classList.add(".keyboard__key_on")
-        // setTimeout((function() {
-        //     element.key.classList.remove(".keyboard__key_on:active")
-        // }
-        // ), 100)
-        // this.properties.start = input.selectionStart;
-        // this.properties.end = input.selectionEnd;
-        // const start = input.selectionStart
-        // const end = input.selectionEnd
-        // const text1 = element.value
-        // const before = text.substring(0, start)
-        // const after  = text.substring(end, text.length)
-        // element.value = (before + after)
-        // element.selectionStart = element.selectionEnd = start + element.value
-        // this.focus()
-        // console.log(end)
-        // console.log(this.properties.value)
         // this.properties.start++;
         // this.properties.end++;
       });
       window.addEventListener("keyup", (e) => {
-        console.log(e);
-        const button_id = e.key.length > 1 ? e.key : e.key.toLowerCase();
+        // console.log(e);
+        const button_id = e.code;
         document.getElementById(button_id).classList.remove('keyboard__key_on');
       });
     });
@@ -107,22 +90,10 @@ const Keyboard = {
       //позиция курсора
       this.properties.start = input.selectionStart;
       this.properties.end = input.selectionEnd;
-      console.log(input.selectionStart)
+      // console.log(input.selectionStart)
 
 
     });
-
-    // document.querySelector(".use-keyboard-input").addEventListener('click', (newText, el = document.activeElement) => {
-    //   const start = el.selectionStart
-    //   const end = el.selectionEnd
-    //   const text = el.value
-    //   const before = text.substring(0, start)
-    //   const after  = text.substring(end, text.length)
-    //   el.value = (before + newText + after)
-    //   el.selectionStart = el.selectionEnd = start + newText.length
-    //   el.focus()
-    // })
-
   },
 
   _createKeys(i) {
@@ -165,15 +136,25 @@ const Keyboard = {
       return `<i class="material-icons">${icon_name}</i>`;
     };
 
-    keyLayout.forEach(key => {
+    keyLayout.forEach((key, ind) => {
 
+      const keys = [
+        "Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6", "Digit7", "Digit8", "Digit9", "Digit0", "Backspace",
+        "KeyQ", "KeyW", "KeyE", "KeyR", "KeyT", "KeyY", "KeyU", "KeyI", "KeyO", "KeyP",
+        "CapsLock", "KeyA", "KeyS", "KeyD", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyK", "KeyL", "Enter",
+        "ShiftLeft", "KeyZ", "KeyX", "KeyC", "KeyV", "KeyB", "KeyN", "KeyM", "Comma", "Period", "Slash", "done",
+        "mic", "sound", "Space", "en", "ArrowLeft", "ArrowRight"
+      ];
+
+      // console.log(ind)
       const keyElement = document.createElement("button");
       const insertLineBreak = ["Backspace", "p", "Enter", "done", "з"].indexOf(key) !== -1;
 
       // Add attributes/classes
       keyElement.setAttribute("type", "button");
       keyElement.classList.add("keyboard__key");
-      keyElement.id = key;
+      keyElement.id = `${keys[ind]}`;
+      // console.log(keyElement.id)
 
       switch (key) {
         case "Backspace":
@@ -306,8 +287,8 @@ const Keyboard = {
             input.value = before + " " + after;
 
             this.properties.value = input.value;
-            this.properties.start++;
-            this.properties.end++;
+            this.properties.start = start + 1;
+            this.properties.end = end + 1;
             // this.properties.value += " ";
             this._soundMain();
             this._triggerEvent("oninput");
@@ -436,24 +417,13 @@ const Keyboard = {
 
             }
             this.properties.value = input.value;
-            this.properties.start++;
-            this.properties.end++;
-            // this.properties.end.focus();
-
-            // input.focus();
+            this.properties.start = start + 1;
+            this.properties.end = end + 1;
 
             // this.properties.start = input.selectionStart;
             // this.properties.end = input.selectionEnd;
-
-
-
-            // this.properties.value += this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
-            // this.properties.value += this.properties.shift ? key.toUpperCase() : key.toLowerCase();
-            // if(keyElement.textContent < 10) this.properties.value += shiftValue[0]
-            // this.properties.value += key;
-            // let i = +keyElement.textContent
             // console.dir(keyElement)
-            console.log(this.properties.start, this.properties.end)
+            // console.log(this.properties.start, this.properties.end)
             this._soundMain();
             this._triggerEvent("oninput");
           });
@@ -474,7 +444,6 @@ const Keyboard = {
   speechToggle() {
     if(this.properties.mic) {
       this.properties.lang === 'en' ? recognition.lang = 'en-US' : recognition.lang = 'ru-RU';
-      console.log(recognition.lang)
       recognition.addEventListener('result', e => {
         const before = this.properties.value.substring(0, this.properties.start)
         const after  = this.properties.value.substring(this.properties.end, this.properties.value.length)
@@ -488,10 +457,12 @@ const Keyboard = {
         }
         this.properties.start += transcript.length;
         this.properties.end += transcript.length;
-        console.log(transcript);
-        this._triggerEvent("oninput");
+        // console.log(transcript);
+        this.eventHandlers['oninput'](this.properties.value);
       });
+      recognition.addEventListener('end', recognition.start);
       recognition.start();
+      this.eventHandlers['oninput'](this.properties.value);
     }
   },
 
