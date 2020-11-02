@@ -68,14 +68,14 @@ const Keyboard = {
 
         // this.properties.start = input.selectionStart;
         // this.properties.end = input.selectionEnd;
-        console.log(input.selectionStart)
+        // console.log(input.selectionStart)
 
       });
 
       window.addEventListener("keydown", (e) => {
         // console.log(e);
         const button_id = e.code;
-        document.getElementById(button_id).classList.add('keyboard__key_on')
+        document.getElementById(button_id).classList.add('keyboard__key_on');
         // this.properties.start++;
         // this.properties.end++;
       });
